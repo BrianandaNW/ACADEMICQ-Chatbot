@@ -420,7 +420,15 @@ os.environ["GOOGLE_API_KEY"] = st.secrets["GOOGLE_API_KEY"]
 @st.cache_resource
 def load_vector_db():
     embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-2")
-    db = FAISS.load_local("vector_index", embeddings, allow_dangerous_deserialization=True)
+    
+    # 1. Mendeteksi lokasi pasti (path) dari file app.py ini berada
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # 2. Menggabungkan lokasi app.py dengan folder vector_index
+    db_path = os.path.join(current_dir, "vector_index")
+    
+    # 3. Memuat database menggunakan jalur dinamis tersebut
+    db = FAISS.load_local(db_path, embeddings, allow_dangerous_deserialization=True)
     return db
 
 @st.cache_resource
